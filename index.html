@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="以 CRISP-DM 流程進行學生成績多元線性回歸、RFE 特徵選擇與模型評估。">
+  <title>Student Signals — 多元線性回歸分析</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至主要內容</a>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="回到首頁">
+      <span class="brand-mark">SS</span>
+      <span>Student Signals</span>
+    </a>
+    <nav aria-label="主要導覽">
+      <a href="#story">研究流程</a>
+      <a href="#results">模型結果</a>
+      <a href="#lab">互動分析</a>
+    </nav>
+    <a class="header-cta" href="7115056039_hw2.ipynb" download>下載 Notebook</a>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">IoT · HW2 · CRISP-DM</p>
+        <h1>哪些訊號，真正影響<br><em>學習表現？</em></h1>
+        <p class="hero-lead">從 6,607 筆學生資料出發，以多元線性回歸與 RFE 特徵選擇，把「感覺重要」轉化成可驗證的預測證據。</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#lab">開始分析資料</a>
+          <a class="button ghost" href="#results">查看研究結果 <span aria-hidden="true">↘</span></a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="模型表現摘要">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="score-card">
+          <span class="score-label">最佳模型解釋力</span>
+          <strong>0.8251</strong>
+          <span class="score-unit">R² · Model C</span>
+          <div class="score-line"><i style="width:82.51%"></i></div>
+        </div>
+        <div class="float-note note-a"><b>25</b><span>selected features</span></div>
+        <div class="float-note note-b"><b>95.08%</b><span>interval coverage</span></div>
+      </div>
+      <div class="hero-index" aria-hidden="true">01 / 06</div>
+    </section>
+
+    <section class="fact-strip" aria-label="資料集摘要">
+      <div><span>資料筆數</span><strong>6,607</strong></div>
+      <div><span>原始特徵</span><strong>19</strong></div>
+      <div><span>目標欄位</span><strong>Exam_Score</strong></div>
+      <div><span>資料來源</span><a href="https://www.kaggle.com/datasets/lainguyn123/student-performance-factors" target="_blank" rel="noreferrer">Kaggle ↗</a></div>
+    </section>
+
+    <section class="section intro" id="story">
+      <div class="section-heading">
+        <p class="eyebrow">Research map</p>
+        <h2>一條可重現的<br>分析路徑</h2>
+      </div>
+      <div class="intro-copy">
+        <p>研究以 <b>Exam_Score</b> 為預測目標，比較單純線性回歸、完整多元線性回歸，以及經 RFE 篩選後的多元線性回歸。所有前處理與特徵選擇只在訓練資料上擬合，降低資料洩漏風險。</p>
+        <p class="callout">核心問題：加入學習環境、家庭背景與個人行為等特徵，能否比單用讀書時間更準確地預測成績？</p>
+      </div>
+    </section>
+
+    <section class="process" aria-label="CRISP-DM 六階段">
+      <article><span>01</span><h3>Business<br>Understanding</h3><p>定義成績預測目標與模型比較問題。</p></article>
+      <article><span>02</span><h3>Data<br>Understanding</h3><p>檢查 20 欄資料、缺失值、分布與相關性。</p></article>
+      <article><span>03</span><h3>Data<br>Preparation</h3><p>清理異常值、填補缺失、標準化與 One-Hot 編碼。</p></article>
+      <article><span>04</span><h3>Modeling</h3><p>建立 Simple、Multiple 與 RFE 三種線性模型。</p></article>
+      <article><span>05</span><h3>Evaluation</h3><p>以 MAE、RMSE、R²、殘差與預測區間驗證。</p></article>
+      <article><span>06</span><h3>Deployment</h3><p>保存模型，並以本網站呈現完整分析成果。</p></article>
+    </section>
+
+    <section class="section insight-section">
+      <div class="section-heading">
+        <p class="eyebrow">Data understanding</p>
+        <h2>資料先說了<br>什麼？</h2>
+      </div>
+      <div class="insight-grid">
+        <figure class="feature-figure large">
+          <img src="figures/02_correlation_heatmap.png" alt="數值特徵相關係數熱力圖" loading="lazy">
+          <figcaption><span>Fig. 02</span> 相關係數熱力圖</figcaption>
+        </figure>
+        <div class="insight-notes">
+          <div class="stat"><strong>0.58</strong><p><b>Attendance</b> 與成績的相關性最高；高於讀書時間的 0.45。</p></div>
+          <div class="stat"><strong>67.24</strong><p>平均考試成績，多數樣本集中在約 60–75 分。</p></div>
+          <p class="fine-print">相關不等於因果。此資料集為合成資料，結論僅用於方法教學與模型驗證。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="results" id="results">
+      <div class="results-head">
+        <div>
+          <p class="eyebrow light">Model evaluation</p>
+          <h2>更多特徵，<br>帶來更少誤差。</h2>
+        </div>
+        <p>Model C 以 25 個編碼後特徵達到最佳測試表現；相較完整模型減少 2 個特徵，預測能力幾乎不變。</p>
+      </div>
+      <div class="model-table" role="table" aria-label="模型評估比較">
+        <div class="table-row table-header" role="row"><span>模型</span><span>Features</span><span>MAE</span><span>RMSE</span><span>R²</span></div>
+        <div class="table-row" role="row"><span><i>A</i> Simple LR</span><span>1</span><span>2.4190</span><span>3.1559</span><strong>0.2469</strong></div>
+        <div class="table-row" role="row"><span><i>B</i> Multiple LR</span><span>27</span><span>0.4160</span><span>1.5213</span><strong>0.8250</strong></div>
+        <div class="table-row best" role="row"><span><i>C</i> Multiple LR + RFE <b>BEST</b></span><span>25</span><span>0.4157</span><span>1.5210</span><strong>0.8251</strong></div>
+      </div>
+      <div class="result-gallery">
+        <figure><img src="figures/07_model_C_predictions.png" alt="Model C 實際值與預測值散佈圖" loading="lazy"><figcaption>實際值 vs. 預測值</figcaption></figure>
+        <figure><img src="figures/09_model_C_residuals.png" alt="Model C 殘差圖" loading="lazy"><figcaption>殘差診斷</figcaption></figure>
+        <figure><img src="figures/10_prediction_interval.png" alt="Model C 百分之九十五預測區間" loading="lazy"><figcaption>95% 預測區間</figcaption></figure>
+      </div>
+      <div class="interval-banner"><span>95% Split Conformal</span><strong>95.08%</strong><p>實際涵蓋率</p><strong>±0.8044</strong><p>預測區間半寬（分）</p></div>
+    </section>
+
+    <section class="lab" id="lab">
+      <div class="lab-intro">
+        <p class="eyebrow">Interactive regression lab</p>
+        <h2>換成你的資料，<br>現場跑一次。</h2>
+        <p>選擇內建問題，或貼上任何可公開存取的 CSV 網址。運算完全在瀏覽器內完成，資料不會上傳到伺服器。</p>
+      </div>
+      <div class="lab-panel">
+        <div class="form-grid">
+          <label class="field wide"><span>Problem / 分析問題</span>
+            <select id="problemSelect">
+              <option value="student">Problem 1 · 學生成績預測（內建資料）</option>
+              <option value="custom">Problem 2 · 自訂 CSV 迴歸分析</option>
+            </select>
+          </label>
+          <label class="field wide"><span>Dataset URL</span>
+            <div class="url-row"><input id="datasetUrl" type="url" value="data/StudentPerformanceFactors.csv" aria-describedby="urlHelp"><button id="loadButton" type="button">載入資料</button></div>
+            <small id="urlHelp">支援公開 CSV；若來源阻擋跨網域請改用下方檔案上傳。</small>
+          </label>
+          <label class="field upload"><span>或上傳 CSV</span><input id="fileInput" type="file" accept=".csv,text/csv"></label>
+          <label class="field"><span>目標欄位（Y）</span><select id="targetSelect" disabled><option>請先載入資料</option></select></label>
+          <label class="field"><span>模型</span><select id="modelSelect"><option value="multiple">多元線性回歸 + 特徵選擇</option><option value="simple">單純線性回歸</option></select></label>
+          <label class="field"><span>保留特徵數</span><input id="featureCount" type="number" min="1" max="12" value="6"></label>
+        </div>
+        <div class="lab-actions"><button class="run-button" id="runButton" type="button" disabled>執行回歸分析 <span>→</span></button><div id="status" role="status" aria-live="polite">等待載入資料</div></div>
+        <div class="lab-output" id="labOutput" hidden>
+          <div class="metric-cards"><div><span>MAE</span><strong id="metricMae">—</strong></div><div><span>RMSE</span><strong id="metricRmse">—</strong></div><div class="accent"><span>R²</span><strong id="metricR2">—</strong></div></div>
+          <div class="chart-wrap"><canvas id="predictionChart" width="760" height="360" aria-label="實際值與預測值散佈圖"></canvas></div>
+          <div class="output-detail"><div><h3>資料摘要</h3><p id="dataSummary"></p></div><div><h3>入選特徵</h3><div class="feature-tags" id="featureTags"></div></div></div>
+          <div class="preview-wrap"><h3>資料預覽</h3><div class="table-scroll"><table id="previewTable"></table></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section notes-section">
+      <article>
+        <p class="eyebrow">GPT 輔助內容</p>
+        <h2>分析與呈現協作</h2>
+        <p>GPT 協助整理 CRISP-DM 報告架構、檢查資料前處理流程、說明 RFE 與 Split Conformal Prediction，並協助將 Notebook 分析結果轉化為可閱讀、可互動的網頁。模型數值仍以 Notebook 實際執行輸出為準。</p>
+      </article>
+      <article>
+        <p class="eyebrow">NotebookLM 摘要</p>
+        <h2>同主題方法比較</h2>
+        <p>根據 NotebookLM 整理的相關文獻，學生成績預測常使用 Random Forest、XGBoost 與 LightGBM 等集成學習方法，以捕捉非線性關係及特徵交互作用；但這類模型通常也需要額外的解釋技術。本研究採用結構較透明的多元線性回歸，搭配 RFE 減少特徵數量。結果顯示 RFE 模型以較少特徵維持與完整模型近乎相同的效能。不過，由於資料切分、前處理與實驗設定不同，不能直接宣稱線性模型優於其他方法；若應用於真實教育資料，仍須在相同條件下比較泛化能力。</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div><span class="brand-mark">SS</span><p>Multiple Linear Regression<br>with Feature Selection</p></div>
+    <div class="footer-links"><a href="7115056039_hw2.pdf">完整報告 PDF</a><a href="7115056039_hw2.ipynb">Jupyter Notebook</a><a href="data/StudentPerformanceFactors.csv">原始資料 CSV</a></div>
+    <p class="copyright">7115056039 · Internet of Things · HW2</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
